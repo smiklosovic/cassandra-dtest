@@ -3114,7 +3114,7 @@ class TestNetworkAuth(Tester):
             self.clear_network_auth_cache(self.dc2_node, cache_name)
             self.assertUnauthorized(lambda: session.execute("SELECT * FROM ks.tbl"))
 
-        if self.dtest_config.cassandra_version_from_build > '4.0':
+        if self.dtest_config.cassandra_version_from_build >= '4.1.0':
             test_revoked_access("NetworkPermissionsCache")
 
         # deprecated cache name, scheduled for removal in 5.0
@@ -3155,7 +3155,14 @@ class TestNetworkAuth(Tester):
         session = self.exclusive_cql_connection(self.dc2_node, user=username, password='password')
         superuser.execute("ALTER ROLE %s WITH LOGIN=false" % username)
         self.clear_roles_cache(self.dc2_node)
-        self.clear_network_auth_cache(self.dc2_node)
+
+        if self.dtest_config.cassandra_version_from_build >= '4.1.0':
+            self.clear_network_auth_cache(self.dc2_node, "NetworkPermissionsCache")
+
+        # deprecated cache name, scheduled for removal in 5.0
+        if self.dtest_config.cassandra_version_from_build < '5.0':
+            self.clear_network_auth_cache(self.dc2_node, "NetworkAuthCache")
+
         self.assertUnauthorized(lambda: session.execute("SELECT * FROM ks.tbl"))
 
 
