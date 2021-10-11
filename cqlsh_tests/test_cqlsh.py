@@ -2189,7 +2189,7 @@ Tracing session:""")
         assert output_lines[-2].strip() == ''
         assert output_lines[-1].strip() == "({} rows)".format(num_rows)
 
-    @since('4.1')
+    #@since('4.1')
     def test_passwd_warnings(self):
         config = {'authenticator': 'org.apache.cassandra.auth.PasswordAuthenticator'}
         self.cluster.set_configuration_options(values=config)
