@@ -1135,6 +1135,7 @@ CREATE TYPE test.address_type (
         ) WITH CLUSTERING ORDER BY (col ASC)
             AND additional_write_policy = '99p'
             AND allow_auto_snapshot = true
+            AND auto_snapshot_ttl = 0s
             AND bloom_filter_fp_chance = 0.01
             AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
             AND cdc = false
@@ -1267,6 +1268,7 @@ CREATE TYPE test.address_type (
             lastname text
         ) WITH additional_write_policy = '99p'
             AND allow_auto_snapshot = true
+            AND auto_snapshot_ttl = 0s
             AND bloom_filter_fp_chance = 0.01
             AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
             AND cdc = false
@@ -1425,6 +1427,7 @@ CREATE TYPE test.address_type (
                 WITH CLUSTERING ORDER BY (username ASC)
                 AND additional_write_policy = '99p'
                 AND allow_auto_snapshot = true
+                AND auto_snapshot_ttl = 0s
                 AND bloom_filter_fp_chance = 0.01
                 AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
                 AND cdc = false
