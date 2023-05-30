@@ -2,6 +2,7 @@ import os
 import pytest
 import logging
 
+from distutils.version import LooseVersion
 from dtest import create_ks
 from distutils.version import LooseVersion
 from scrub_test import TestHelper
@@ -94,6 +95,15 @@ class TestCompression(TestHelper):
               """)
           warn = node.grep_log("The option crc_check_chance was deprecated as a compression option.")
           assert len(warn) == 1
+        else:
+          session.execute("""
+              alter table compression_opts_table
+                  WITH compression = {
+                      'class': 'DeflateCompressor',
+                      'chunk_length': '256KiB'
+                  }
+                  AND crc_check_chance = 0.6;
+              """)
 
           # check metadata again after crc_check_chance_update
           session.cluster.refresh_schema_metadata()
