@@ -14,7 +14,7 @@ from cassandra.metadata import Murmur3Token
 from ccmlib.common import is_win
 from ccmlib.node import Node, ToolError
 
-from dtest import Tester, create_ks, create_cf
+from dtest import Tester, create_ks, create_cf, wait_for_all_compactions
 from tools.assertions import assert_almost_equal, assert_one
 from tools.data import create_c1c2_table, insert_c1c2
 from tools.misc import new_node, ImmutableMapping
@@ -435,7 +435,7 @@ class TestIncRepair(Tester):
         for x in range(0, 10):
             node1.stress(['write', 'n=100k', 'no-warmup', '-rate', 'threads=10', '-schema', 'compaction(strategy=LeveledCompactionStrategy,sstable_size_in_mb=10)', 'replication(factor=2)'])
             cluster.flush()
-            cluster.wait_for_compactions()
+            wait_for_all_compactions(cluster)
             node1.nodetool("repair -full keyspace1 standard1")
 
     @pytest.mark.env("long")
@@ -465,7 +465,7 @@ class TestIncRepair(Tester):
         cluster.flush()
 
         logger.debug("Waiting compactions to finish")
-        cluster.wait_for_compactions()
+        wait_for_all_compactions(cluster)
 
         if self.cluster.version() >= '2.2':
             logger.debug("Repairing node1")

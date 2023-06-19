@@ -8,7 +8,7 @@ import logging
 from ccmlib import common
 from ccmlib.node import ToolError
 
-from dtest import Tester
+from dtest import Tester, wait_for_compactions
 from tools.intervention import InterruptCompaction
 
 since = pytest.mark.since
@@ -96,11 +96,10 @@ class TestSSTableUtil(Tester):
         logger.debug("Restarting node...")
         node.start(wait_for_binary_proto=True)
         # in some environments, a compaction may start that would change sstable files. We should wait if so
-        node.wait_for_compactions()
+        wait_for_compactions(node)
 
         finalfiles, tmpfiles = self._check_files(node, KeyspaceName, TableName)
         assert 0 == len(tmpfiles)
-
         logger.debug("Running stress to ensure data is readable")
         self._read_data(node, numrecords)
 

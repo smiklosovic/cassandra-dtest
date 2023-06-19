@@ -7,7 +7,7 @@ import pytest
 import logging
 
 from ccmlib.node import Node
-from dtest import Tester, create_ks
+from dtest import Tester, create_ks, wait_for_compactions
 from tools.assertions import assert_almost_equal
 from tools.data import create_c1c2_table, insert_c1c2, query_c1c2
 from tools.jmxutils import (JolokiaAgent, make_mbean)
@@ -337,7 +337,7 @@ class TestDiskBalance(Tester):
         node.nodetool('enableautocompaction')
 
         logger.debug("Waiting for compactions on {}".format(node.name))
-        node.wait_for_compactions()
+        wait_for_compactions(node)
 
         logger.debug("Disabling compactions on {} should not block forever".format(node.name))
         node.nodetool('disableautocompaction')
@@ -345,7 +345,7 @@ class TestDiskBalance(Tester):
         logger.debug("Major compact {} and check disks are balanced".format(node.name))
         node.compact()
 
-        node.wait_for_compactions()
+        wait_for_compactions(node)
         self.assert_balanced(node)
 
         logger.debug("Reading data back ({} keys)".format(total_keys))

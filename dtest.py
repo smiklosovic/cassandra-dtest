@@ -52,6 +52,23 @@ MAJOR_VERSION_5 = LooseVersion('5.0')
 logger = logging.getLogger(__name__)
 
 
+def wait_for_all_compactions(cluster, timeout=600):
+    """
+    Wait for all compactions to finish on all nodes.
+    """
+    for node in list(cluster.nodes.values()):
+        if node.is_running():
+            wait_for_compactions(node) 
+
+
+def wait_for_compactions(node):
+    pattern = re.compile("pending tasks:? +0")
+    while True:
+        output, err, _ = node.nodetool("compactionstats")
+        if pattern.search(output):
+            break
+
+
 def get_sha(repo_dir):
     try:
         output = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo_dir).strip()

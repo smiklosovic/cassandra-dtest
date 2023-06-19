@@ -9,7 +9,7 @@ import pytest
 import parse
 import logging
 
-from dtest import Tester, create_ks
+from dtest import Tester, create_ks, wait_for_compactions
 from tools.assertions import assert_length_equal, assert_none, assert_one
 
 since = pytest.mark.since
@@ -89,7 +89,7 @@ class TestCompaction(Tester):
 
         node1.flush()
         node1.compact()
-        node1.wait_for_compactions()
+        wait_for_compactions(node1)
 
         output = node1.nodetool('cfstats').stdout
         if output.find(table_name) != -1:
@@ -132,7 +132,7 @@ class TestCompaction(Tester):
             node1.flush()
 
         node1.nodetool('enableautocompaction')
-        node1.wait_for_compactions()
+        wait_for_compactions(node1)
 
         table_name = 'standard1'
         output = node1.nodetool('cfstats').stdout
@@ -183,7 +183,7 @@ class TestCompaction(Tester):
 
         node1.flush()
         node1.nodetool("compact ks cf")
-        node1.wait_for_compactions()
+        wait_for_compactions(node1)
         time.sleep(1)
         try:
             for data_dir in node1.data_directories():

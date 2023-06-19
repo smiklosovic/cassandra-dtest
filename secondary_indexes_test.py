@@ -15,7 +15,7 @@ from cassandra.protocol import ConfigurationException
 from cassandra.query import BatchStatement, SimpleStatement
 
 from bootstrap_test import BootstrapTester
-from dtest import Tester, create_ks, create_cf, mk_bman_path
+from dtest import Tester, create_ks, create_cf, mk_bman_path, wait_for_all_compactions
 from tools.assertions import assert_bootstrap_state, assert_invalid, assert_none, assert_one, assert_row_count, \
     assert_length_equal, assert_all
 from tools.data import block_until_index_is_built, rows_to_list
@@ -404,7 +404,7 @@ class TestSecondaryIndexes(Tester):
         # Successfully rebuild the index
         before_files = after_files
         node.nodetool("rebuild_index k t idx")
-        cluster.wait_for_compactions()
+        wait_for_all_compactions(cluster)
         after_files = self._index_sstables_files(node, 'k', 't', 'idx')
 
         # Verify that the index is rebuilt, marked as built, and it still can answer queries and accept writes
@@ -432,7 +432,7 @@ class TestSecondaryIndexes(Tester):
         # Create an index and immediately drop it, without waiting for index building
         session.execute('CREATE INDEX idx ON standard1("C0")')
         session.execute('DROP INDEX idx')
-        cluster.wait_for_compactions()
+        wait_for_all_compactions(cluster)
 
         # Check that the index is not marked as built nor queryable
         assert_none(session, """SELECT * FROM system."IndexInfo" WHERE table_name='keyspace1'""")
