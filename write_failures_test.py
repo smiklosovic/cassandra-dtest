@@ -175,10 +175,10 @@ class TestWriteFailures(Tester):
         """
         exc = self._perform_cql_statement("""
             BEGIN BATCH
-            INSERT INTO mytable (key, value) VALUES ('key2', 'Value 2') USING TIMESTAMP 1111111111111111
-            INSERT INTO mytable (key, value) VALUES ('key3', 'Value 3') USING TIMESTAMP 1111111111111112
+            INSERT INTO {ks}.mytable (key, value) VALUES ('key2', 'Value 2') USING TIMESTAMP 1111111111111111
+            INSERT INTO {ks}.mytable (key, value) VALUES ('key3', 'Value 3') USING TIMESTAMP 1111111111111112
             APPLY BATCH
-        """)
+        """.format(ks=KEYSPACE))
         if self.supports_v5_protocol:
             self._assert_error_code_map_exists_with_code(exc, 0x0000)
 

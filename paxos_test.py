@@ -167,6 +167,7 @@ class TestPaxos(Tester):
         
         session = Cluster([nodes[0].ip_addr], connect_timeout=15, idle_heartbeat_interval=0,
                           execution_profiles={EXEC_PROFILE_DEFAULT: ExecutionProfile(request_timeout=60)}).connect('ks')
+        session.execute('USE ks')
         q = session.prepare("""
                 BEGIN BATCH
                    UPDATE test SET v = ? WHERE k = 0 IF v = ?;
